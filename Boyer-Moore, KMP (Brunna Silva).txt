@@ -1,0 +1,58 @@
+
+# coding: utf-8
+
+# In[5]:
+
+
+import sys
+
+#Boyer-Moore
+
+class última_ocorrência(object):
+    #Última ocorrência
+
+    def __init__(self, padrão, alfabeto):
+        #Dicionário do alfabeto do txt
+        
+        self.ocorrências = dict()
+        for letra in alfabeto:
+            self.ocorrências[letra] = padrão.rfind(letra)
+
+    def __call__(self, letra):
+        #Posição da letra no padrão
+        return self.ocorrências[letra]
+
+
+def boyer_moore_casamento(texto, padrão):
+    #Encontro de ocorrência do padrão no texto
+    alfabeto = set(texto)
+    ultimo = última_ocorrência(padrão, alfabeto)
+    tamanho_m_padrão = len(padrão)
+    tamanho_n_texto = len(texto)
+    i = tamanho_m_padrão - 1  # indíce do texto
+    j = tamanho_m_padrão - 1  # indícce do padrão
+    ocorrência_padrão = 0
+    while i < tamanho_n_texto:   
+        if texto[i] == padrão[j]:
+            if j == 0:
+                ocorrência_padrão += 1
+                i = i + tamanho_m_padrão
+            else:
+                i -= 1
+                j -= 1
+        else:
+            l = ultimo(texto[i])
+            i = i + tamanho_m_padrão - min(j, 1 + l)
+            j = tamanho_m_padrão - 1 
+    return ocorrência_padrão
+
+
+txt = sys.argv[1].lower()
+arq = sys.argv[2]
+
+with open(arq,'r') as f:
+    doc_txt = f.read().lower()
+
+ocr = boyer_moore_casamento(doc_txt,txt)
+print(ocr)
+
